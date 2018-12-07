@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2017.1.1 (Build 111U_SU)" ts="2018-06-09 18:28:43">
+<Class name="User.Bank">
+<Super>%Persistent</Super>
+<TimeChanged>64805,39910.689009</TimeChanged>
+<TimeCreated>64805,39833.41819</TimeCreated>
+
+<Property name="Nazwa">
+<Type>%String</Type>
+</Property>
+
+<Property name="Konta">
+<Type>User.Konto</Type>
+<Cardinality>children</Cardinality>
+<Inverse>Bank</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^User.BankD</DataLocation>
+<DefaultData>BankDefaultData</DefaultData>
+<IdLocation>^User.BankD</IdLocation>
+<IndexLocation>^User.BankI</IndexLocation>
+<StreamLocation>^User.BankS</StreamLocation>
+<Data name="BankDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Nazwa</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="User.Happy">
+<Super>User.Lokata,%SerialObject,%Populate,%XML.Adaptor,%ZEN.DataModel.Adaptor</Super>
+<TimeChanged>64807,62025.734546</TimeChanged>
+<TimeCreated>64805,62198.060583</TimeCreated>
+
+<Property name="oprocentowania">
+<Type>SkladowaProcentowa</Type>
+<Collection>list</Collection>
+</Property>
+
+<Method name="Dodaj">
+<FormalSpec>input:User.SkladowaProcentowa</FormalSpec>
+<Implementation><![CDATA[
+	
+	Do ..oprocentowania.Insert(input)
+]]></Implementation>
+</Method>
+
+<Method name="Zysk">
+<ReturnType>%Float</ReturnType>
+<Implementation><![CDATA[
+	set k = ..wklad
+	for i=1:1:..oprocentowania.Count(){
+		
+	set x = ..oprocentowania.GetAt(i).miesiac
+	set y = ..oprocentowania.GetAt(i).stopa
+	set k = k+(k*x*30*y/365)
+	
+	}
+	
+	return k-..wklad
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="User.Klient">
+<Super>%Persistent</Super>
+<TimeChanged>64805,40173.054473</TimeChanged>
+<TimeCreated>64805,39833.554822</TimeCreated>
+
+<Property name="Imie">
+<Type>%String</Type>
+</Property>
+
+<Property name="Nazwisko">
+<Type>%String</Type>
+</Property>
+
+<Property name="Konto">
+<Type>User.Konto</Type>
+<Cardinality>many</Cardinality>
+<Inverse>WlascicielKonta</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^User.KlientD</DataLocation>
+<DefaultData>KlientDefaultData</DefaultData>
+<IdLocation>^User.KlientD</IdLocation>
+<IndexLocation>^User.KlientI</IndexLocation>
+<StreamLocation>^User.KlientS</StreamLocation>
+<Data name="KlientDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Imie</Value>
+</Value>
+<Value name="3">
+<Value>Nazwisko</Value>
+</Value>
+<Value name="4">
+<Value>Konto</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="User.Konto">
+<Super>%Persistent</Super>
+<TimeChanged>64807,63643.309638</TimeChanged>
+<TimeCreated>64805,39833.680446</TimeCreated>
+
+<Property name="Lokaty">
+<Type>User.Lokata</Type>
+<Collection>list</Collection>
+<Required>1</Required>
+</Property>
+
+<Property name="WlascicielKonta">
+<Type>User.Klient</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Konto</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Property name="Bank">
+<Type>User.Bank</Type>
+<Cardinality>parent</Cardinality>
+<Inverse>Konta</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Method name="DodajLokate">
+<FormalSpec>input:User.Lokata</FormalSpec>
+<Implementation><![CDATA[    Do ..Lokaty.Insert(input)
+]]></Implementation>
+</Method>
+
+<Method name="CalkowityZysk">
+<Final>1</Final>
+<ReturnType>%Float</ReturnType>
+<Implementation><![CDATA[
+	set suma=0
+ 	for i=1:1:..Lokaty.Count(){
+	 set suma = suma + ..Lokaty.GetAt(i).Zysk()
+ }
+ return suma
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>{%%PARENT}("Konta")</DataLocation>
+<DefaultData>KontoDefaultData</DefaultData>
+<IdLocation>^User.BankC("Konta")</IdLocation>
+<IndexLocation>^User.KontoI</IndexLocation>
+<StreamLocation>^User.KontoS</StreamLocation>
+<Data name="KontoDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Lokaty</Value>
+</Value>
+<Value name="3">
+<Value>WlascicielKonta</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="User.Lokata">
+<Abstract>1</Abstract>
+<TimeChanged>64806,83043.787605</TimeChanged>
+<TimeCreated>64805,39910.426389</TimeCreated>
+
+<Property name="okres">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="wklad">
+<Type>%Float</Type>
+</Property>
+
+<Method name="Zysk">
+<FormalSpec>kwota:%Float</FormalSpec>
+<ReturnType>%Float</ReturnType>
+</Method>
+</Class>
+
+
+<Class name="User.Power">
+<Super>User.Lokata,%SerialObject,%Populate,%XML.Adaptor,%ZEN.DataModel.Adaptor</Super>
+<TimeChanged>64807,61104.141396</TimeChanged>
+<TimeCreated>64805,61455.414973</TimeCreated>
+
+<Property name="oprocentowanie">
+<Type>%Float</Type>
+</Property>
+
+<Method name="Zysk">
+<ReturnType>%Float</ReturnType>
+<Implementation><![CDATA[
+	set x = ..okres
+	set y = ..oprocentowanie
+	set z = (..wklad*x*30*y/365)
+	return z
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="User.SkladowaProcentowa">
+<Super>%SerialObject</Super>
+<TimeChanged>64807,61897.046792</TimeChanged>
+<TimeCreated>64807,61068.755729</TimeCreated>
+
+<Property name="miesiac">
+<Type>%Float</Type>
+</Property>
+
+<Property name="stopa">
+<Type>%Float</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Library.CacheSerialState</Type>
+<State>SkladowaProcentowaState</State>
+<StreamLocation>^User.SkladowaProcentowaS</StreamLocation>
+<Data name="SkladowaProcentowaState">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>miesiac</Value>
+</Value>
+<Value name="2">
+<Value>stopa</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

@@ -1,0 +1,35 @@
+set k=##class(Konto).%New()
+set klient = ##class(Klient).%New()
+set klient.Imie = "Michal"
+set klient.Nazwisko="Fisej"
+set bank = ##class(Bank).%New()
+set bank.Nazwa="BP"
+set konto = ##class(Konto).%New()
+set konto.Bank=bank
+set konto.WlascicielKonta=klient
+set lokata1=##class(Power).%New()
+set lokata1.okres=12
+set lokata1.wklad=1000
+set lokata1.oprocentowanie=0.05
+do konto.DodajLokate(lokata1)
+zwrite lokata1.Zysk()
+set lokata2=##class(Happy).%New()
+set lokata2.wklad=1000
+do konto.DodajLokate(lokata2)
+set proc1=##class(SkladowaProcentowa).%New()
+set proc1.miesiac=1
+set proc1.stopa=0.20
+set proc2=##class(SkladowaProcentowa).%New()
+set proc2.miesiac=1
+set proc2.stopa=0.40
+set proc3=##class(SkladowaProcentowa).%New()
+set proc3.miesiac=1
+set proc3.stopa=0.60
+set proc4=##class(SkladowaProcentowa).%New()
+set proc4.miesiac=1
+set proc4.stopa=0.80
+do lokata2.Dodaj(proc1)
+do lokata2.Dodaj(proc2)
+do lokata2.Dodaj(proc3)
+do lokata2.Dodaj(proc4)
+zwrite lokata2.Zysk()
